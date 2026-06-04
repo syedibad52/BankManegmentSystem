@@ -30,10 +30,6 @@ async function getSqlJs() {
 }
 
 async function getDb() {
-  // Ensure setup has completed before returning db
-  if (!_setupDone && _setupPromise) {
-    await _setupPromise;
-  }
   if (_db) return _db;
   const SQL = await getSqlJs();
   if (fs.existsSync(DB_PATH)) {
@@ -87,9 +83,15 @@ async function setupDatabase() {
   if (_setupDone) return;
   if (_setupPromise) return _setupPromise;
 
-  _setupPromise = _doSetup();
-  await _setupPromise;
-  _setupDone = true;
+  _setupPromise = _doSetup().then(() => {
+    _setupDone = true;
+  }).catch((err) => {
+    // Reset so next call retries instead of returning the failed promise
+    _setupPromise = null;
+    _db = null;
+    throw err;
+  });
+  return _setupPromise;
 }
 
 async function _doSetup() {

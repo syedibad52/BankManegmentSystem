@@ -31,6 +31,8 @@ app.use('/api', async (req, res, next) => {
     }
     next();
   } catch (err) {
+    // Reset so next request retries instead of being stuck on the failed promise
+    dbPromise = null;
     console.error('DB init error:', err);
     res.status(500).json({ success: false, message: 'Server starting up, please retry.' });
   }
