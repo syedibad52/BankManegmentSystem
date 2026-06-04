@@ -3,9 +3,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const { setupDatabase } = require('./database/db');
 
-// Setup DB on first run
-setupDatabase();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -14,8 +11,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve static frontend from the frontend/ folder
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Serve static frontend with caching headers
+app.use(express.static(path.join(__dirname, '../frontend'), {
+  maxAge: '1d',            // cache static assets for 1 day
+  etag: true,
+  lastModified: true
+}));
+
+// Ensure DB is ready before ANY API request hits a route
+let dbReady = false;
+let dbPromise = null;
+
+app.use('/api', async (req, res, next) => {
+  try {
+    if (!dbReady) {
+      if (!dbPromise) dbPromise = setupDatabase();
+      await dbPromise;
+      dbReady = true;
+    }
+    next();
+  } catch (err) {
+    console.error('DB init error:', err);
+    res.status(500).json({ success: false, message: 'Server starting up, please retry.' });
+  }
+});
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -31,6 +50,9 @@ app.get('*', (req, res) => {
 });
 
 if (process.env.VERCEL !== '1') {
+  // Start DB setup immediately for local dev (non-blocking)
+  setupDatabase();
+
   app.listen(PORT, () => {
     console.log('');
     console.log('╔══════════════════════════════════════════╗');

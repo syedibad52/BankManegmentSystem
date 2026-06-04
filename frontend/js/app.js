@@ -38,6 +38,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch {
     showPage('login-page');
   }
+  // Dismiss the branded loading screen
+  const loader = document.getElementById('app-loader');
+  if (loader) {
+    loader.classList.add('hidden');
+    setTimeout(() => loader.remove(), 350);
+  }
 });
 
 function setCurrentDate() {

@@ -14,8 +14,13 @@ const fs = require('fs');
 const isVercel = process.env.VERCEL === '1';
 const DB_PATH = isVercel ? '/tmp/bank.db' : path.join(__dirname, 'bank.db');
 
+// Use lower bcrypt rounds on Vercel for faster cold starts (4 rounds ≈ 5ms vs 10 rounds ≈ 300ms)
+const BCRYPT_ROUNDS = isVercel ? 4 : 10;
+
 let _sqlJs = null;
 let _db = null;
+let _setupPromise = null;   // ensures setupDatabase runs only once
+let _setupDone = false;
 
 async function getSqlJs() {
   if (!_sqlJs) {
@@ -25,6 +30,10 @@ async function getSqlJs() {
 }
 
 async function getDb() {
+  // Ensure setup has completed before returning db
+  if (!_setupDone && _setupPromise) {
+    await _setupPromise;
+  }
   if (_db) return _db;
   const SQL = await getSqlJs();
   if (fs.existsSync(DB_PATH)) {
@@ -74,6 +83,16 @@ function dbAll(db, sql, params = []) {
 }
 
 async function setupDatabase() {
+  // Prevent duplicate runs
+  if (_setupDone) return;
+  if (_setupPromise) return _setupPromise;
+
+  _setupPromise = _doSetup();
+  await _setupPromise;
+  _setupDone = true;
+}
+
+async function _doSetup() {
   const db = await getDb();
 
   // Create tables
@@ -118,7 +137,7 @@ async function setupDatabase() {
   // Seed admin
   const adminExists = dbGet(db, "SELECT id FROM users WHERE role = 'admin' LIMIT 1");
   if (!adminExists) {
-    const hash = bcrypt.hashSync('admin123', 10);
+    const hash = bcrypt.hashSync('admin123', BCRYPT_ROUNDS);
     db.run("INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, 'admin')",
       ['System Administrator', 'admin@bankms.com', hash]);
     saveDb();
@@ -128,7 +147,8 @@ async function setupDatabase() {
   // Seed customers
   const countRow = dbGet(db, "SELECT COUNT(*) as count FROM users WHERE role = 'customer'");
   if (!countRow || countRow.count === 0) {
-    const customerHash = bcrypt.hashSync('password123', 10);
+    // Hash once, reuse for all customers
+    const customerHash = bcrypt.hashSync('password123', BCRYPT_ROUNDS);
     const customers = [
       ['Rahul Sharma', 'rahul@email.com'],
       ['Priya Patel', 'priya@email.com'],
@@ -138,25 +158,24 @@ async function setupDatabase() {
     for (const [name, email] of customers) {
       db.run("INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, 'customer')",
         [name, email, customerHash]);
-      saveDb();
 
       const user = dbGet(db, "SELECT id FROM users WHERE email = ?", [email]);
       const accNum = 'ACC' + String(Date.now()).slice(-8) + Math.floor(Math.random() * 100);
       const balance = Math.floor(Math.random() * 50000) + 5000;
       db.run("INSERT INTO accounts (account_number, user_id, account_type, balance) VALUES (?, ?, 'savings', ?)",
         [accNum, user.id, balance]);
-      saveDb();
 
       const acc = dbGet(db, "SELECT id FROM accounts WHERE user_id = ?", [user.id]);
       const txRef = 'TXN' + Date.now() + Math.random().toString(36).slice(2, 7).toUpperCase();
       db.run("INSERT INTO transactions (account_id, type, amount, balance_after, description, reference) VALUES (?, 'credit', ?, ?, 'Initial deposit', ?)",
         [acc.id, balance, balance, txRef]);
-      saveDb();
     }
+    // Save once at the end instead of after every single operation
+    saveDb();
     console.log('✅ Sample customers created (password: password123)');
   }
 
   console.log('✅ Database setup complete:', DB_PATH);
 }
 
-module.exports = { getDb, saveDb, dbRun, dbGet, dbAll, setupDatabase };
+module.exports = { getDb, saveDb, dbRun, dbGet, dbAll, setupDatabase, BCRYPT_ROUNDS };

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { getDb, dbGet, dbRun, saveDb } = require('../database/db');
+const { getDb, dbGet, dbRun, saveDb, BCRYPT_ROUNDS } = require('../database/db');
 const { generateToken } = require('../middleware/auth');
 
 // POST /api/auth/login
@@ -59,7 +59,7 @@ router.post('/register', async (req, res) => {
     if (existing) {
       return res.status(409).json({ success: false, message: 'Email already registered' });
     }
-    const hash = bcrypt.hashSync(password, 10);
+    const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS);
     db.run("INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, 'customer')",
       [full_name.trim(), email.toLowerCase(), hash]);
     saveDb();
