@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexaBank — Secure Banking Portal</title>
+  <meta name="description" content="NexaBank - Your secure online banking portal. Manage accounts, deposits, withdrawals and transactions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page" class="page active">
+  <div class="login-bg">
+    <div class="login-orb orb-1"></div>
+    <div class="login-orb orb-2"></div>
+    <div class="login-orb orb-3"></div>
+  </div>
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="brand-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="10" fill="url(#lg1)"/>
+          <path d="M7 22L13 10L16 16L19 12L25 22H7Z" fill="white" opacity="0.9"/>
+          <defs><linearGradient id="lg1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+        </svg>
+      </div>
+      <span class="brand-name">NexaBank</span>
+    </div>
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your secure banking portal</p>
+      </div>
+
+      <!-- Role Tabs -->
+      <div class="role-tabs">
+        <button class="role-tab active" id="tab-customer" onclick="switchRole('customer')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          Customer
+        </button>
+        <button class="role-tab" id="tab-admin" onclick="switchRole('admin')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          Admin
+        </button>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="login-email" placeholder="Enter your email" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="toggle-pass" onclick="togglePassword('login-password')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="login-error" class="form-error hidden"></div>
+        <button type="submit" class="btn-primary btn-full" id="login-btn">
+          <span>Sign In</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </button>
+      </form>
+
+      <div class="login-divider"><span>or</span></div>
+
+      <button class="btn-outline btn-full" onclick="showRegister()">Create New Account</button>
+
+      <div class="login-hints">
+        <div class="hint-item" onclick="fillDemo('admin@bankms.com', 'admin123', 'admin')">
+          <span class="hint-label">Admin Demo</span>
+          <span class="hint-creds">admin@bankms.com / admin123</span>
+        </div>
+        <div class="hint-item" onclick="fillDemo('rahul@email.com', 'password123', 'customer')">
+          <span class="hint-label">Customer Demo</span>
+          <span class="hint-creds">rahul@email.com / password123</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER PAGE -->
+<div id="register-page" class="page">
+  <div class="login-bg">
+    <div class="login-orb orb-1"></div>
+    <div class="login-orb orb-2"></div>
+  </div>
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="brand-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="10" fill="url(#lg2)"/>
+          <path d="M7 22L13 10L16 16L19 12L25 22H7Z" fill="white" opacity="0.9"/>
+          <defs><linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+        </svg>
+      </div>
+      <span class="brand-name">NexaBank</span>
+    </div>
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Open Account</h1>
+        <p>Create your free banking account today</p>
+      </div>
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" id="reg-name" placeholder="Your full name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="reg-email" placeholder="Your email" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="reg-password" placeholder="Min 6 characters" required minlength="6">
+          </div>
+        </div>
+        <div id="register-error" class="form-error hidden"></div>
+        <div id="register-success" class="form-success hidden"></div>
+        <button type="submit" class="btn-primary btn-full">Create Account</button>
+      </form>
+      <div class="login-divider"><span>Already have an account?</span></div>
+      <button class="btn-outline btn-full" onclick="showLogin()">Back to Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-page" class="page">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo-sm">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="10" fill="url(#lg3)"/>
+          <path d="M7 22L13 10L16 16L19 12L25 22H7Z" fill="white" opacity="0.9"/>
+          <defs><linearGradient id="lg3" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+        </svg>
+      </div>
+      <span>NexaBank</span>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- Filled by JS -->
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar-sm" id="sidebar-avatar"></div>
+      <div class="user-meta">
+        <div class="user-name-sm" id="sidebar-name"></div>
+        <div class="user-role-badge" id="sidebar-role"></div>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()" title="Logout">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()" id="menu-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <div class="notification-btn" onclick="showToast('No new notifications', 'info')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge"></span>
+        </div>
+        <div class="topbar-avatar" id="topbar-avatar"></div>
+      </div>
+    </header>
+
+    <!-- Panels -->
+    <div class="content-panels">
+
+      <!-- Dashboard Panel -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="panel-hero">
+          <div>
+            <div class="greeting" id="greeting-text">Good Morning!</div>
+            <h2 id="user-welcome">Welcome back</h2>
+          </div>
+          <div class="date-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="current-date"></span>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="stats-grid">
+          <!-- Filled by JS -->
+        </div>
+
+        <!-- Charts & Recent -->
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Recent Transactions</h3>
+              <button class="btn-ghost" onclick="navigate('transactions')">View All</button>
+            </div>
+            <div id="recent-transactions-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div class="quick-actions" id="quick-actions">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accounts Panel -->
+      <div class="panel" id="panel-accounts">
+        <div class="panel-header">
+          <h2>My Accounts</h2>
+          <p>Manage your bank accounts</p>
+        </div>
+        <div id="accounts-list" class="accounts-grid"></div>
+      </div>
+
+      <!-- Deposit Panel -->
+      <div class="panel" id="panel-deposit">
+        <div class="panel-header">
+          <h2>Deposit Funds</h2>
+          <p>Add money to your account securely</p>
+        </div>
+        <div class="transaction-layout">
+          <div class="card transaction-card">
+            <form id="deposit-form" onsubmit="handleDeposit(event)">
+              <div class="form-group">
+                <label>Select Account</label>
+                <div class="input-wrap">
+                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  <select id="deposit-account" class="form-select" required onchange="updateDepositBalance()"></select>
+                </div>
+              </div>
+              <div class="balance-preview" id="deposit-balance-preview"></div>
+              <div class="form-group">
+                <label>Amount (₹)</label>
+                <div class="input-wrap">
+                  <span class="input-prefix">₹</span>
+                  <input type="number" id="deposit-amount" placeholder="0.00" min="1" max="1000000" step="0.01" required>
+                </div>
+              </div>
+              <div class="quick-amounts">
+                <button type="button" class="qty-btn" onclick="setAmount('deposit-amount', 1000)">₹1,000</button>
+                <button type="button" class="qty-btn" onclick="setAmount('deposit-amount', 5000)">₹5,000</button>
+                <button type="button" class="qty-btn" onclick="setAmount('deposit-amount', 10000)">₹10,000</button>
+                <button type="button" class="qty-btn" onclick="setAmount('deposit-amount', 25000)">₹25,000</button>
+              </div>
+              <div class="form-group">
+                <label>Description (optional)</label>
+                <div class="input-wrap">
+                  <input type="text" id="deposit-desc" placeholder="e.g., Salary credit">
+                </div>
+              </div>
+              <div id="deposit-error" class="form-error hidden"></div>
+              <button type="submit" class="btn-primary btn-full btn-deposit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg>
+                Deposit Funds
+              </button>
+            </form>
+          </div>
+          <div class="card transaction-info">
+            <h3>Deposit Guidelines</h3>
+            <ul class="info-list">
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> Instant credit to your account</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> Maximum ₹10,00,000 per transaction</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> No deposit fees</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> 256-bit SSL encrypted</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Withdraw Panel -->
+      <div class="panel" id="panel-withdraw">
+        <div class="panel-header">
+          <h2>Withdraw Funds</h2>
+          <p>Securely withdraw money from your account</p>
+        </div>
+        <div class="transaction-layout">
+          <div class="card transaction-card">
+            <form id="withdraw-form" onsubmit="handleWithdraw(event)">
+              <div class="form-group">
+                <label>Select Account</label>
+                <div class="input-wrap">
+                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  <select id="withdraw-account" class="form-select" required onchange="updateWithdrawBalance()"></select>
+                </div>
+              </div>
+              <div class="balance-preview" id="withdraw-balance-preview"></div>
+              <div class="form-group">
+                <label>Amount (₹)</label>
+                <div class="input-wrap">
+                  <span class="input-prefix">₹</span>
+                  <input type="number" id="withdraw-amount" placeholder="0.00" min="1" step="0.01" required>
+                </div>
+              </div>
+              <div class="quick-amounts">
+                <button type="button" class="qty-btn" onclick="setAmount('withdraw-amount', 500)">₹500</button>
+                <button type="button" class="qty-btn" onclick="setAmount('withdraw-amount', 1000)">₹1,000</button>
+                <button type="button" class="qty-btn" onclick="setAmount('withdraw-amount', 5000)">₹5,000</button>
+                <button type="button" class="qty-btn" onclick="setAmount('withdraw-amount', 10000)">₹10,000</button>
+              </div>
+              <div class="form-group">
+                <label>Description (optional)</label>
+                <div class="input-wrap">
+                  <input type="text" id="withdraw-desc" placeholder="e.g., ATM withdrawal">
+                </div>
+              </div>
+              <div id="withdraw-error" class="form-error hidden"></div>
+              <button type="submit" class="btn-primary btn-full btn-withdraw">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+                Withdraw Funds
+              </button>
+            </form>
+          </div>
+          <div class="card transaction-info">
+            <h3>Withdrawal Policy</h3>
+            <ul class="info-list">
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Minimum balance ₹500 required</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> Instant processing</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> No withdrawal charges</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> Real-time balance update</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions Panel -->
+      <div class="panel" id="panel-transactions">
+        <div class="panel-header">
+          <h2>Transaction History</h2>
+          <p>Complete record of all your banking activities</p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-row">
+              <select id="tx-filter-account" class="form-select compact" onchange="loadTransactions()">
+                <option value="">All Accounts</option>
+              </select>
+            </div>
+            <button class="btn-ghost" onclick="loadTransactions()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+              Refresh
+            </button>
+          </div>
+          <div id="transactions-table-container"></div>
+        </div>
+      </div>
+
+      <!-- Admin Dashboard Panel -->
+      <div class="panel" id="panel-admin-dashboard">
+        <div class="panel-hero">
+          <div>
+            <div class="greeting">Admin Control Center</div>
+            <h2>System Overview</h2>
+          </div>
+          <div class="date-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="admin-current-date"></span>
+          </div>
+        </div>
+        <div class="stats-grid" id="admin-stats-grid"></div>
+        <div class="dashboard-grid">
+          <div class="card" style="grid-column: 1/-1;">
+            <div class="card-header">
+              <h3 class="card-title">Recent Transactions (System-wide)</h3>
+              <button class="btn-ghost" onclick="navigate('admin-transactions')">View All</button>
+            </div>
+            <div id="admin-recent-tx"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Customers Panel -->
+      <div class="panel" id="panel-admin-customers">
+        <div class="panel-header">
+          <h2>Customer Management</h2>
+          <p>View and manage all customer accounts</p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <input type="text" id="customer-search" class="form-input compact" placeholder="Search customers..." oninput="filterCustomers()">
+            <button class="btn-primary" onclick="showAddCustomerModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Customer
+            </button>
+          </div>
+          <div id="customers-table-container"></div>
+        </div>
+      </div>
+
+      <!-- Admin Transactions Panel -->
+      <div class="panel" id="panel-admin-transactions">
+        <div class="panel-header">
+          <h2>All Transactions</h2>
+          <p>System-wide transaction ledger</p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Transaction Ledger</h3>
+            <button class="btn-ghost" onclick="loadAdminTransactions()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+              Refresh
+            </button>
+          </div>
+          <div id="admin-transactions-table"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ADD CUSTOMER MODAL -->
+<div id="add-customer-modal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Add New Customer</h3>
+      <button class="modal-close" onclick="closeModal('add-customer-modal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="add-customer-form" onsubmit="handleAddCustomer(event)">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="ac-name" placeholder="Customer full name" required class="form-input-plain">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="ac-email" placeholder="customer@email.com" required class="form-input-plain">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="ac-password" placeholder="Min 6 characters" required minlength="6" class="form-input-plain">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Account Type</label>
+          <select id="ac-type" class="form-select">
+            <option value="savings">Savings</option>
+            <option value="current">Current</option>
+            <option value="fd">Fixed Deposit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Initial Balance (₹)</label>
+          <input type="number" id="ac-balance" placeholder="0.00" min="0" step="0.01" class="form-input-plain">
+        </div>
+      </div>
+      <div id="ac-error" class="form-error hidden"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeModal('add-customer-modal')">Cancel</button>
+        <button type="submit" class="btn-primary">Create Customer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="success-modal" class="modal-overlay hidden">
+  <div class="modal-card success-modal-card">
+    <div class="success-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+    </div>
+    <h3 id="success-title">Transaction Successful!</h3>
+    <p id="success-message">Your transaction has been processed.</p>
+    <div class="success-detail" id="success-detail"></div>
+    <button class="btn-primary" onclick="closeModal('success-modal')">Done</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
